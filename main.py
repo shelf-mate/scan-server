@@ -51,6 +51,7 @@ async def video():
                     failed_scans = 0
                     succesfull_scans = 0
                     broadcast(CONNECTIONS, json.dumps({"command": "scan", "data": {"ean": ean}}))
+                    await asyncio.sleep(2)
                 if failed_scans > 10:
                     print("Failed to scan")
                     failed_scans = 0
