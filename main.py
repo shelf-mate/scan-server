@@ -9,6 +9,13 @@ import json
 
 import asyncio
 
+from dotenv import load_dotenv
+
+import os
+
+load_dotenv()  # take environment variables from .env.
+
+
 from websockets.asyncio.server import  serve
 
 CONNECTIONS = set()
@@ -51,7 +58,7 @@ async def video():
                     failed_scans = 0
                     succesfull_scans = 0
                     broadcast(CONNECTIONS, json.dumps({"command": "scan", "data": {"ean": ean}}))
-                    await asyncio.sleep(2)
+                    await asyncio.sleep(10)
                 if failed_scans > 10:
                     print("Failed to scan")
                     failed_scans = 0
@@ -59,7 +66,7 @@ async def video():
             await asyncio.sleep(0.001)
 
 async def main():
-    server = await serve(register, "localhost", 8000)
+    server = await serve(register, "0.0.0.0", os.getenv("PORT"))
     
     asyncio.create_task(video())
     

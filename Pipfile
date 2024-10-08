@@ -9,6 +9,7 @@ jurigged = "*"
 opencv-python = "*"
 imutils = "*"
 requests = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
