@@ -12,7 +12,7 @@ pipeline {
             steps {
                 container('kaniko') {
                     script {
-                        buildDockerImage(additionalImageTags: ["latest-arm"], imageName: "shelf-mate/scan-server", buildArgs: ["--custom-platform=linux/arm"])
+                        buildDockerImage(additionalImageTags: ["latest-arm"], imageName: "shelf-mate/scan-server", flags: ["--custom-platform=linux/arm"])
                     }
                 }
             }
