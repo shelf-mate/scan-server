@@ -22,7 +22,6 @@ from websockets.asyncio.server import  serve
 
 CONNECTIONS = set()
 async def handle_message(raw_data):
-    print("new message: " + raw_data)
     data = json.loads(raw_data)
     global block_scan
     if data["command"] == "block":
@@ -36,7 +35,6 @@ async def register(websocket):
     print("Connection opened")
     try:
         while True:
-            print("Waiting for message...")
             data = await websocket.recv()
             await handle_message(data)
     finally:
