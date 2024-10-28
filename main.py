@@ -2,15 +2,14 @@
 import cv2
 import asyncio
 from websockets.asyncio.server import serve, Server, broadcast
-from imutils.video import VideoStream
 import numpy as np
 import requests
 import json
 
 import asyncio
-
+from picamera2 import Picamera2
 from dotenv import load_dotenv
-
+from libcamera import controls
 import os
 
 load_dotenv()  # take environment variables from .env.
@@ -43,7 +42,10 @@ async def register(websocket):
 
 async def video():
     global block_scan
-    vs = cv2.VideoCapture(1)
+    picam2 = Picamera2()
+    picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (1920, 1080)}))
+    picam2.start()
+    picam2.set_controls({"AfMode": controls.AfModeEnum.Manual, "LensPosition": 25})
     detector = cv2.barcode.BarcodeDetector()
 
     if not vs.isOpened():
