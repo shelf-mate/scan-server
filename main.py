@@ -2,7 +2,6 @@
 import cv2
 import asyncio
 from websockets.asyncio.server import serve, Server, broadcast
-from imutils.video import VideoStream
 import numpy as np
 import requests
 import json
@@ -43,22 +42,16 @@ async def register(websocket):
 
 async def video():
     global block_scan
-    vs = cv2.VideoCapture(1)
+    picam2 = Picamera2()
+    picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
+    picam2.start()
     detector = cv2.barcode.BarcodeDetector()
-
-    if not vs.isOpened():
-        print("Cannot open camera")
-        exit()
         
     succesfull_scans = 0
     failed_scans = 0
     while True:
         if not block_scan:
-            ret, frame = vs.read()
-            if not ret:
-                broadcast(CONNECTIONS, json.dumps({"command": "error", "data": { "message": "Error accessing camera"}}))
-                print("Can't receive frame (stream end?). Exiting ...")
-                break
+            frame = picam2.capture_array()
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)            
             detected, corners = detector.detect(gray)
             if(detected):
