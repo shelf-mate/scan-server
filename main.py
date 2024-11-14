@@ -11,8 +11,39 @@ from picamera2 import Picamera2
 from dotenv import load_dotenv
 from libcamera import controls
 import os
+from gpiozero import PWMOutputDevice
+from time import sleep
 
 load_dotenv()  # take environment variables from .env.
+
+BUZZER_PIN = 12
+
+
+
+def play_buzzer_tone(frequency, duration):
+    """
+    Plays a tone at a specific frequency for a given duration using PWMOutputDevice.
+
+    Args:
+        pin (int): The GPIO pin number where the buzzer is connected.
+        frequency (float): The frequency of the tone in Hz.
+        duration (float): The duration of the tone in seconds.
+    """
+    # Initialize the PWMOutputDevice for the buzzer
+    buzzer = PWMOutputDevice(BUZZER_PIN)
+
+    # Set the frequency and duty cycle
+    buzzer.frequency = frequency
+    buzzer.value = 0.55  # 50% duty cycle for a clear tone
+
+    # Play the tone for the specified duration
+    sleep(duration)
+
+    # Stop the tone
+    buzzer.off()
+
+    # Clean up by stopping the buzzer
+    buzzer.close()
 
 
 block_scan = False
@@ -65,6 +96,7 @@ async def video():
                     failed_scans += 1                
                 if succesfull_scans > 5 and succesfull_scans > failed_scans:
                     print("Scanned: " + ean)
+                    play_buzzer_tone(2300, 0.25)
                     failed_scans = 0
                     succesfull_scans = 0
                     broadcast(CONNECTIONS, json.dumps({"command": "scan", "data": {"ean": ean}}))
